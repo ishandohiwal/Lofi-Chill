@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lo-Fi Chill & Focus Room</title>
+    <style>
+        :root {
+            --bg-color: #121216;
+            --card-bg: #1e1e24;
+            --text-color: #e0e0e8;
+            --accent-color: #b388ff;
+            --accent-hover: #9575cd;
+            --border-color: #2e2e38;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        header {
+            text-align: center;
+            margin: 40px 0 20px 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: #9e9ea6;
+            margin-top: 5px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 90%;
+            max-width: 900px;
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Timer Styles */
+        .timer-display {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: var(--accent-color);
+            font-family: monospace;
+        }
+
+        .timer-btns, .mood-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: #121216;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        button.secondary {
+            background-color: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        button.secondary:hover {
+            background-color: rgba(179, 136, 255, 0.1);
+        }
+
+        /* To-Do List Styles */
+        .todo-input-container {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: #121216;
+            color: white;
+            font-size: 1rem;
+        }
+
+        ul.todo-list {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 0;
+        }
+
+        ul.todo-list li {
+            background-color: #121216;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        ul.todo-list li.completed span {
+            text-decoration: line-through;
+            color: #6c6c75;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff5252;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+        }
+
+        .delete-btn:hover {
+            color: #ff8a80;
+            transform: none;
+        }
+
+        /* Mood Selector */
+        .mood-card {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>☕ Lo-Fi Chill & Focus Room</h1>
+        <p>Breathe, focus, and get things done.</p>
+    </header>
+
+    <div class="container">
+        <!-- Pomodoro Timer Card -->
+        <div class="card">
+            <h2>Pomodoro Timer</h2>
+            <div class="timer-display" id="timer">25:00</div>
+            <div class="timer-btns">
+                <button id="start-btn" onclick="startTimer()">Start</button>
+                <button class="secondary" onclick="pauseTimer()">Pause</button>
+                <button class="secondary" onclick="resetTimer()">Reset</button>
+            </div>
+        </div>
+
+        <!-- To-Do List Card -->
+        <div class="card">
+            <h2>Today's Tasks</h2>
+            <div class="todo-input-container">
+                <input type="text" id="task-input" placeholder="Add a new task...">
+                <button onclick="addTask()">Add</button>
+            </div>
+            <ul class="todo-list" id="todo-list">
+                <!-- Tasks will appear here -->
+            </ul>
+        </div>
+
+        <!-- Mood Switcher Card -->
+        <div class="card mood-card">
+            <h2>Vibe & Theme Switcher</h2>
+            <p style="color: #9e9ea6; font-size: 0.9rem; margin-bottom: 15px;">Change the room's atmosphere:</p>
+            <div class="mood-btns">
+                <button onclick="setTheme('#121216', '#1e1e24', '#b388ff')">💜 Midnight Chill</button>
+                <button onclick="setTheme('#0f172a', '#1e293b', '#38bdf8')">🌧️ Rainy Blue</button>
+                <button onclick="setTheme('#1f1a17', '#2d2621', '#fb923c')">☕ Warm Cafe</button>
+                <button onclick="setTheme('#111827', '#1f2937', '#34d399')">🌿 Forest Green</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Timer Logic
+        let timeLeft = 25 * 60;
+        let timerId = null;
+        const timerDisplay = document.getElementById('timer');
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (timerId !== null) return;
+            timerId = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(timerId);
+                    timerId = null;
+                    alert('Time is up! Take a break.');
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerId);
+            timerId = null;
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeLeft = 25 * 60;
+            updateTimerDisplay();
+        }
+
+        // To-Do List Logic
+        const taskInput = document.getElementById('task-input');
+        const todoList = document.getElementById('todo-list');
+
+        function addTask() {
+            const taskText = taskInput.value.trim();
+            if (taskText === '') return;
+
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span onclick="toggleTask(this)">${taskText}</span>
+                <div class="todo-actions">
+                    <button class="secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="toggleTask(this.parentElement.previousElementSibling)">Done</button>
+                    <button class="delete-btn" onclick="this.closest('li').remove()">✕</button>
+                </div>
+            `;
+            todoList.appendChild(li);
+            taskInput.value = '';
+        }
+
+        function toggleTask(element) {
+            element.closest('li').classList.toggle('completed');
+        }
+
+        // Allow pressing 'Enter' to add task
+        taskInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        // Theme Switcher Logic
+        function setTheme(bg, cardBg, accent) {
+            document.documentElement.style.setProperty('--bg-color', bg);
+            document.documentElement.style.setProperty('--card-bg', cardBg);
+            document.documentElement.style.setProperty('--accent-color', accent);
+            document.documentElement.style.setProperty('--accent-hover', accent);
+        }
+    </script>
+</body>
+</html>
