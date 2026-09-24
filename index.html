@@ -3,384 +3,544 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lo-Fi Chill & Focus Room</title>
+    <title>Aura — Lo-Fi Focus & Chill Room</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #121216;
-            --card-bg: #1e1e24;
-            --text-color: #e0e0e8;
-            --accent-color: #b388ff;
-            --accent-hover: #9575cd;
-            --border-color: #2e2e38;
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 27, 34, 0.65);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent: #a78bfa;
+            --accent-glow: rgba(167, 139, 250, 0.25);
+            --bg-gradient: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0b0f19 70%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-gradient);
             background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            transition: background 0.5s ease;
+            justify-content: space-between;
+            padding: 30px 20px;
+            transition: background 0.8s ease;
+            overflow-x: hidden;
+        }
+
+        /* Ambient floating lights */
+        .ambient-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            opacity: 0.12;
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+            transition: background 0.8s ease;
+            pointer-events: none;
         }
 
         header {
             text-align: center;
-            margin: 40px 0 20px 0;
+            margin-bottom: 20px;
+            animation: fadeInDown 0.8s ease;
         }
 
         header h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            color: var(--accent-color);
-            letter-spacing: 1px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
         }
 
         header p {
-            color: #9e9ea6;
-            margin-top: 5px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 300;
         }
 
-        .container {
+        /* Dashboard Grid Layout */
+        .dashboard {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(12, 1fr);
             gap: 20px;
-            width: 90%;
-            max-width: 900px;
-            margin-bottom: 50px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
+            width: 100%;
+            max-width: 1050px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease;
         }
 
         .card {
-            background-color: var(--card-bg);
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
             display: flex;
             flex-direction: column;
-            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease, border-color 0.3s ease;
         }
 
-        .card h2 {
-            margin-top: 0;
-            font-size: 1.3rem;
-            color: var(--text-color);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-            width: 100%;
-            text-align: center;
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
         }
 
-        /* Timer Styles */
-        .timer-display {
-            font-size: 4rem;
-            font-weight: bold;
-            margin: 20px 0;
-            color: var(--accent-color);
-            font-family: monospace;
-        }
-
-        .timer-btns, .mood-btns {
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 15px;
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
 
+        /* Specific Grid Spans */
+        .timer-card { grid-column: span 6; }
+        .todo-card { grid-column: span 6; }
+        .radio-card { grid-column: span 12; }
+        .theme-card { grid-column: span 12; }
+
+        @media (max-width: 768px) {
+            .timer-card, .todo-card { grid-column: span 12; }
+        }
+
+        /* Buttons & Inputs */
         button {
-            background-color: var(--accent-color);
-            color: #121216;
+            background-color: var(--accent);
+            color: #0b0f19;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px var(--accent-glow);
         }
 
         button:hover {
-            background-color: var(--accent-hover);
-            transform: translateY(-2px);
+            opacity: 0.9;
+            transform: scale(1.02);
         }
 
-        button.secondary {
-            background-color: transparent;
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
+        button.outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            box-shadow: none;
         }
 
-        button.secondary:hover {
-            background-color: rgba(179, 136, 255, 0.1);
+        button.outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent);
         }
 
-        /* To-Do List Styles */
-        .todo-input-container {
+        /* Timer UI */
+        .timer-display {
+            font-size: 3.8rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 10px 0 20px 0;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-main);
+        }
+
+        .timer-controls {
             display: flex;
-            width: 100%;
             gap: 10px;
-            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        /* Todo List UI */
+        .todo-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 10px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
-            background-color: #121216;
-            color: white;
-            font-size: 1rem;
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
         }
 
-        ul.todo-list {
+        input[type="text"]:focus {
+            border-color: var(--accent);
+        }
+
+        .todo-list {
             list-style: none;
-            padding: 0;
-            width: 100%;
-            max-height: 200px;
+            max-height: 160px;
             overflow-y: auto;
-            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 4px;
         }
 
-        ul.todo-list li {
-            background-color: #121216;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
+        .todo-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .todo-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .todo-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            transition: 0.2s;
         }
 
-        ul.todo-list li.completed span {
+        .todo-item.done span {
             text-decoration: line-through;
-            color: #6c6c75;
+            color: var(--text-muted);
         }
 
         .todo-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .delete-btn {
-            background: none;
+        .icon-btn {
+            background: transparent;
             border: none;
-            color: #ff5252;
+            color: var(--text-muted);
             cursor: pointer;
-            font-size: 1rem;
-            padding: 0;
+            padding: 4px;
+            box-shadow: none;
+            font-size: 0.85rem;
         }
-
-        .delete-btn:hover {
-            color: #ff8a80;
+        .icon-btn:hover {
+            color: #ff6b6b;
             transform: none;
         }
 
-        /* Full width cards */
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        /* Radio styles */
-        .radio-controls {
+        /* Radio & Music Player UI */
+        .radio-content {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-top: 10px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        .vinyl {
-            width: 50px;
-            height: 50px;
+        .station-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .vinyl-disc {
+            width: 56px;
+            height: 56px;
+            background: radial-gradient(circle, #111 30%, #1f1f1f 31%, #111 60%);
+            border: 2px solid var(--accent);
             border-radius: 50%;
-            background: radial-gradient(circle, #333 30%, #111 31%);
-            border: 2px solid var(--accent-color);
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
             animation: spin 3s linear infinite paused;
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        .vinyl.playing {
+        .vinyl-disc.playing {
             animation-play-state: running;
         }
 
-        .vinyl-center {
-            width: 15px;
-            height: 15px;
-            background-color: var(--accent-color);
+        .vinyl-inner {
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
             border-radius: 50%;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .song-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .song-status {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Theme & Vibe Selector UI */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .theme-btn {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: none;
+        }
+
+        .theme-btn:hover {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Footer Quote */
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            max-width: 600px;
+            line-height: 1.5;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
+    <div class="ambient-glow" id="glow"></div>
+
     <header>
-        <h1>☕ Lo-Fi Chill & Focus Room</h1>
-        <p>Breathe, focus, and get things done.</p>
+        <h1>Aura Sanctuary</h1>
+        <p>Immersive soundscapes & distraction-free flow state.</p>
     </header>
 
-    <div class="container">
-        <!-- Pomodoro Timer Card -->
-        <div class="card">
-            <h2>Pomodoro Timer</h2>
+    <div class="dashboard">
+        <!-- Pomodoro Card -->
+        <div class="card timer-card">
+            <div class="card-title">⏱️ Focus Timer</div>
             <div class="timer-display" id="timer">25:00</div>
-            <div class="timer-btns">
-                <button id="start-btn" onclick="startTimer()">Start</button>
-                <button class="secondary" onclick="pauseTimer()">Pause</button>
-                <button class="secondary" onclick="resetTimer()">Reset</button>
+            <div class="timer-controls">
+                <button id="main-timer-btn" onclick="toggleTimer()">Start Flow</button>
+                <button class="outline" onclick="resetTimer()">Reset</button>
             </div>
         </div>
 
-        <!-- To-Do List Card -->
-        <div class="card">
-            <h2>Today's Tasks</h2>
-            <div class="todo-input-container">
-                <input type="text" id="task-input" placeholder="Add a new task...">
+        <!-- Todo Card -->
+        <div class="card todo-card">
+            <div class="card-title">📝 Focus Tasks</div>
+            <div class="todo-input-group">
+                <input type="text" id="task-input" placeholder="What's your priority?">
                 <button onclick="addTask()">Add</button>
             </div>
             <ul class="todo-list" id="todo-list">
-                <!-- Tasks will appear here -->
+                <!-- Tasks injected via JS -->
             </ul>
         </div>
 
-        <!-- Lo-Fi Radio Stream Card -->
-        <div class="card full-width">
-            <h2>🎵 Lo-Fi Radio Stream</h2>
-            <p style="color: #9e9ea6; font-size: 0.9rem; margin-top: 5px;">Continuous relaxing beats to study/relax to</p>
-            <div class="radio-controls">
-                <div class="vinyl" id="vinyl">
-                    <div class="vinyl-center"></div>
+        <!-- Radio Card -->
+        <div class="card radio-card">
+            <div class="card-title">🎵 Live Lo-Fi Stream</div>
+            <div class="radio-content">
+                <div class="station-info">
+                    <div class="vinyl-disc" id="vinyl">
+                        <div class="vinyl-inner"></div>
+                    </div>
+                    <div>
+                        <div class="song-title">Chill Beats 24/7 Radio</div>
+                        <div class="song-status" id="radio-status">Paused</div>
+                    </div>
                 </div>
-                <button id="radio-btn" onclick="toggleRadio()">▶ Play Music</button>
-                <audio id="lofi-audio" src="https://stream.zeno.fm/f3wvbbqmdg8uv" preload="none"></audio>
+                <button id="radio-btn" onclick="toggleRadio()">▶ Play Beats</button>
             </div>
+            <audio id="lofi-audio" src="https://stream.zeno.fm/f3wvbbqmdg8uv" preload="none"></audio>
         </div>
 
-        <!-- Mood Switcher Card -->
-        <div class="card full-width">
-            <h2>Vibe & Theme Switcher</h2>
-            <p style="color: #9e9ea6; font-size: 0.9rem; margin-bottom: 15px;">Change the room's atmosphere:</p>
-            <div class="mood-btns">
-                <button onclick="setTheme('#121216', '#1e1e24', '#b388ff')">💜 Midnight Chill</button>
-                <button onclick="setTheme('#0f172a', '#1e293b', '#38bdf8')">🌧️ Rainy Blue</button>
-                <button onclick="setTheme('#1f1a17', '#2d2621', '#fb923c')">☕ Warm Cafe</button>
-                <button onclick="setTheme('#111827', '#1f2937', '#34d399')">🌿 Forest Green</button>
+        <!-- Theme Switcher Card -->
+        <div class="card theme-card">
+            <div class="card-title">🎨 Atmosphere Switcher</div>
+            <div class="theme-grid">
+                <button class="theme-btn" onclick="setVibe('purple', '#0b0f19', '#1e1b4b', '#a78bfa', 'radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0b0f19 70%)')">💜 Midnight</button>
+                <button class="theme-btn" onclick="setVibe('blue', '#020617', '#0f172a', '#38bdf8', 'radial-gradient(circle at 50% 20%, #0f172a 0%, #020617 70%)')">🌧️ Rainy Blue</button>
+                <button class="theme-btn" onclick="setVibe('amber', '#18120b', '#29211a', '#fb923c', 'radial-gradient(circle at 50% 20%, #29211a 0%, #18120b 70%)')">☕ Warm Café</button>
+                <button class="theme-btn" onclick="setVibe('emerald', '#022c22', '#064e3b', '#34d399', 'radial-gradient(circle at 50% 20%, #064e3b 0%, #022c22 70%)')">🌿 Forest Pine</button>
             </div>
         </div>
     </div>
 
+    <footer id="quote-footer">
+        "Focus is a muscle. The more you practice eliminating distractions, the easier it becomes."
+    </footer>
+
     <script>
-        // Timer Logic
+        // --- Timer Logic ---
         let timeLeft = 25 * 60;
-        let timerId = null;
+        let timerRunning = false;
+        let timerInterval = null;
         const timerDisplay = document.getElementById('timer');
+        const mainTimerBtn = document.getElementById('main-timer-btn');
 
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        function updateTimerText() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
-        function startTimer() {
-            if (timerId !== null) return;
-            timerId = setInterval(() => {
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    updateTimerDisplay();
-                } else {
-                    clearInterval(timerId);
-                    timerId = null;
-                    alert('Time is up! Take a break.');
-                }
-            }, 1000);
-        }
-
-        function pauseTimer() {
-            clearInterval(timerId);
-            timerId = null;
+        function toggleTimer() {
+            if (!timerRunning) {
+                timerRunning = true;
+                mainTimerBtn.textContent = "Pause";
+                mainTimerBtn.classList.add('outline');
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerText();
+                    } else {
+                        clearInterval(timerInterval);
+                        timerRunning = false;
+                        mainTimerBtn.textContent = "Start Flow";
+                        mainTimerBtn.classList.remove('outline');
+                        alert("Great focus session! Take a deep breath break.");
+                    }
+                }, 1000);
+            } else {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                mainTimerBtn.textContent = "Resume";
+                mainTimerBtn.classList.remove('outline');
+            }
         }
 
         function resetTimer() {
-            pauseTimer();
+            clearInterval(timerInterval);
+            timerRunning = false;
             timeLeft = 25 * 60;
-            updateTimerDisplay();
+            updateTimerText();
+            mainTimerBtn.textContent = "Start Flow";
+            mainTimerBtn.classList.remove('outline');
         }
 
-        // To-Do List Logic
+        // --- Todo List Logic ---
         const taskInput = document.getElementById('task-input');
         const todoList = document.getElementById('todo-list');
 
         function addTask() {
-            const taskText = taskInput.value.trim();
-            if (taskText === '') return;
+            const text = taskInput.value.trim();
+            if (!text) return;
 
             const li = document.createElement('li');
+            li.className = 'todo-item';
             li.innerHTML = `
-                <span onclick="toggleTask(this)">${taskText}</span>
+                <span>${text}</span>
                 <div class="todo-actions">
-                    <button class="secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="toggleTask(this.parentElement.previousElementSibling)">Done</button>
-                    <button class="delete-btn" onclick="this.closest('li').remove()">✕</button>
+                    <button class="icon-btn" onclick="toggleTask(this)">✓</button>
+                    <button class="icon-btn" onclick="this.closest('li').remove()">✕</button>
                 </div>
             `;
             todoList.appendChild(li);
             taskInput.value = '';
         }
 
-        function toggleTask(element) {
-            element.closest('li').classList.toggle('completed');
+        function toggleTask(btn) {
+            const item = btn.closest('.todo-item');
+            item.classList.toggle('done');
         }
 
-        taskInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addTask();
-            }
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
         });
 
-        // Radio Audio Logic
+        // --- Radio / Lo-Fi Audio Logic ---
         const audio = document.getElementById('lofi-audio');
         const radioBtn = document.getElementById('radio-btn');
         const vinyl = document.getElementById('vinyl');
+        const radioStatus = document.getElementById('radio-status');
         let isPlaying = false;
 
         function toggleRadio() {
             if (!isPlaying) {
                 audio.play().then(() => {
                     isPlaying = true;
-                    radioBtn.textContent = "⏸ Pause Music";
+                    radioBtn.textContent = "⏸ Pause Beats";
                     vinyl.classList.add('playing');
+                    radioStatus.textContent = "Now Streaming Live 🎧";
                 }).catch(err => {
-                    console.log("Audio playback error:", err);
-                    alert("Could not load stream automatically. Please try clicking play again.");
+                    alert("Click play again to start the stream.");
                 });
             } else {
                 audio.pause();
                 isPlaying = false;
-                radioBtn.textContent = "▶ Play Music";
+                radioBtn.textContent = "▶ Play Beats";
                 vinyl.classList.remove('playing');
+                radioStatus.textContent = "Paused";
             }
         }
 
-        // Theme Switcher Logic
-        function setTheme(bg, cardBg, accent) {
-            document.documentElement.style.setProperty('--bg-color', bg);
-            document.documentElement.style.setProperty('--card-bg', cardBg);
-            document.documentElement.style.setProperty('--accent-color', accent);
-            document.documentElement.style.setProperty('--accent-hover', accent);
+        // --- Theme & Atmosphere Switcher ---
+        function setVibe(name, bgColor, cardColor, accentColor, gradient) {
+            document.documentElement.style.setProperty('--bg-color', bgColor);
+            document.documentElement.style.setProperty('--card-bg', cardColor);
+            document.documentElement.style.setProperty('--accent', accentColor);
+            document.documentElement.style.setProperty('--accent-glow', accentColor + '40');
+            document.documentElement.style.setProperty('--bg-gradient', gradient);
+            document.getElementById('glow').style.background = accentColor;
         }
+
+        // Random dynamic motivational quotes on load
+        const quotes = [
+            "\"Focus is a muscle. The more you practice eliminating distractions, the easier it becomes.\"",
+            "\"Almost everything will work again if you unplug it for a few minutes... including you.\"",
+            "\"Quiet the mind, and the soul will speak.\"",
+            "\"Action is the foundational key to all success.\""
+        ];
+        document.getElementById('quote-footer').textContent = quotes[Math.floor(Math.random() * quotes.length)];
     </script>
 </body>
 </html>
