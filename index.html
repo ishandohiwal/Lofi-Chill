@@ -184,9 +184,45 @@
             transform: none;
         }
 
-        /* Mood Selector */
-        .mood-card {
+        /* Full width cards */
+        .full-width {
             grid-column: 1 / -1;
+        }
+
+        /* Radio styles */
+        .radio-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .vinyl {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #333 30%, #111 31%);
+            border: 2px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: spin 3s linear infinite paused;
+        }
+
+        .vinyl.playing {
+            animation-play-state: running;
+        }
+
+        .vinyl-center {
+            width: 15px;
+            height: 15px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -221,8 +257,21 @@
             </ul>
         </div>
 
+        <!-- Lo-Fi Radio Stream Card -->
+        <div class="card full-width">
+            <h2>🎵 Lo-Fi Radio Stream</h2>
+            <p style="color: #9e9ea6; font-size: 0.9rem; margin-top: 5px;">Continuous relaxing beats to study/relax to</p>
+            <div class="radio-controls">
+                <div class="vinyl" id="vinyl">
+                    <div class="vinyl-center"></div>
+                </div>
+                <button id="radio-btn" onclick="toggleRadio()">▶ Play Music</button>
+                <audio id="lofi-audio" src="https://stream.zeno.fm/f3wvbbqmdg8uv" preload="none"></audio>
+            </div>
+        </div>
+
         <!-- Mood Switcher Card -->
-        <div class="card mood-card">
+        <div class="card full-width">
             <h2>Vibe & Theme Switcher</h2>
             <p style="color: #9e9ea6; font-size: 0.9rem; margin-bottom: 15px;">Change the room's atmosphere:</p>
             <div class="mood-btns">
@@ -295,12 +344,35 @@
             element.closest('li').classList.toggle('completed');
         }
 
-        // Allow pressing 'Enter' to add task
         taskInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 addTask();
             }
         });
+
+        // Radio Audio Logic
+        const audio = document.getElementById('lofi-audio');
+        const radioBtn = document.getElementById('radio-btn');
+        const vinyl = document.getElementById('vinyl');
+        let isPlaying = false;
+
+        function toggleRadio() {
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    radioBtn.textContent = "⏸ Pause Music";
+                    vinyl.classList.add('playing');
+                }).catch(err => {
+                    console.log("Audio playback error:", err);
+                    alert("Could not load stream automatically. Please try clicking play again.");
+                });
+            } else {
+                audio.pause();
+                isPlaying = false;
+                radioBtn.textContent = "▶ Play Music";
+                vinyl.classList.remove('playing');
+            }
+        }
 
         // Theme Switcher Logic
         function setTheme(bg, cardBg, accent) {
