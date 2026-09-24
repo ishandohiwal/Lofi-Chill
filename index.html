@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura — Lo-Fi Focus & Chill Room</title>
+    <title>Aura Sanctuary — Ultimate Focus OS</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -38,14 +38,13 @@
             overflow-x: hidden;
         }
 
-        /* Ambient floating lights */
         .ambient-glow {
             position: fixed;
-            width: 400px;
-            height: 400px;
+            width: 500px;
+            height: 500px;
             background: var(--accent);
             opacity: 0.12;
-            filter: blur(120px);
+            filter: blur(140px);
             border-radius: 50%;
             z-index: -1;
             transition: background 0.8s ease;
@@ -54,23 +53,32 @@
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             animation: fadeInDown 0.8s ease;
         }
 
+        .live-clock {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
         header h1 {
-            font-size: 2.5rem;
+            font-size: 2.4rem;
             font-weight: 700;
             letter-spacing: -0.5px;
             background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         header p {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 300;
         }
 
@@ -80,8 +88,8 @@
             grid-template-columns: repeat(12, 1fr);
             gap: 20px;
             width: 100%;
-            max-width: 1050px;
-            margin-bottom: 20px;
+            max-width: 1100px;
+            margin-bottom: 25px;
             animation: fadeInUp 0.8s ease;
         }
 
@@ -91,7 +99,7 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-color);
             border-radius: 24px;
-            padding: 24px;
+            padding: 22px;
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
             display: flex;
             flex-direction: column;
@@ -101,27 +109,30 @@
 
         .card:hover {
             border-color: rgba(255, 255, 255, 0.15);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .card-title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 600;
             color: var(--text-main);
             margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
         }
 
-        /* Specific Grid Spans */
+        /* Grid Spans */
         .timer-card { grid-column: span 6; }
         .todo-card { grid-column: span 6; }
+        .ambient-card { grid-column: span 6; }
+        .notes-card { grid-column: span 6; }
+        .habits-card { grid-column: span 12; }
         .radio-card { grid-column: span 12; }
         .theme-card { grid-column: span 12; }
 
-        @media (max-width: 768px) {
-            .timer-card, .todo-card { grid-column: span 12; }
+        @media (max-width: 850px) {
+            .timer-card, .todo-card, .ambient-card, .notes-card { grid-column: span 12; }
         }
 
         /* Buttons & Inputs */
@@ -133,7 +144,7 @@
             border-radius: 12px;
             font-family: inherit;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 4px 14px var(--accent-glow);
@@ -158,19 +169,25 @@
 
         /* Timer UI */
         .timer-display {
-            font-size: 3.8rem;
+            font-size: 3.5rem;
             font-weight: 700;
             text-align: center;
             letter-spacing: 2px;
-            margin: 10px 0 20px 0;
+            margin: 5px 0 15px 0;
             font-variant-numeric: tabular-nums;
-            color: var(--text-main);
         }
 
         .timer-controls {
             display: flex;
             gap: 10px;
             justify-content: center;
+        }
+
+        .session-counter {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 10px;
         }
 
         /* Todo List UI */
@@ -180,8 +197,7 @@
             margin-bottom: 12px;
         }
 
-        input[type="text"] {
-            flex: 1;
+        input[type="text"], textarea {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -193,13 +209,17 @@
             transition: border-color 0.2s;
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus, textarea:focus {
             border-color: var(--accent);
         }
 
-        .todo-list {
+        .todo-input-group input {
+            flex: 1;
+        }
+
+        .todo-list, .habits-list {
             list-style: none;
-            max-height: 160px;
+            max-height: 140px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -207,24 +227,15 @@
             padding-right: 4px;
         }
 
-        .todo-list::-webkit-scrollbar {
-            width: 4px;
-        }
-        .todo-list::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        .todo-item {
+        .todo-item, .habit-item {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border-color);
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.9rem;
-            transition: 0.2s;
+            font-size: 0.85rem;
         }
 
         .todo-item.done span {
@@ -232,7 +243,7 @@
             color: var(--text-muted);
         }
 
-        .todo-actions {
+        .todo-actions, .habit-actions {
             display: flex;
             gap: 6px;
         }
@@ -244,11 +255,94 @@
             cursor: pointer;
             padding: 4px;
             box-shadow: none;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .icon-btn:hover {
             color: #ff6b6b;
             transform: none;
+        }
+
+        /* Ambient Sound Mixer UI */
+        .sound-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sound-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .sound-info {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .sound-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+            width: 80px;
+        }
+
+        /* Scratchpad UI */
+        textarea {
+            width: 100%;
+            height: 140px;
+            resize: none;
+            line-height: 1.4;
+        }
+
+        /* Habit Tracker UI */
+        .habits-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .habit-card-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .habit-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .checkbox-container {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .habit-card-item.completed .checkbox-container {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: #0b0f19;
+            font-weight: bold;
         }
 
         /* Radio & Music Player UI */
@@ -257,18 +351,18 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
         }
 
         .station-info {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 15px;
         }
 
         .vinyl-disc {
-            width: 56px;
-            height: 56px;
+            width: 50px;
+            height: 50px;
             background: radial-gradient(circle, #111 30%, #1f1f1f 31%, #111 60%);
             border: 2px solid var(--accent);
             border-radius: 50%;
@@ -277,7 +371,7 @@
             justify-content: center;
             position: relative;
             animation: spin 3s linear infinite paused;
-            box-shadow: 0 0 15px var(--accent-glow);
+            box-shadow: 0 0 12px var(--accent-glow);
         }
 
         .vinyl-disc.playing {
@@ -285,8 +379,8 @@
         }
 
         .vinyl-inner {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             background: var(--accent);
             border-radius: 50%;
         }
@@ -297,19 +391,19 @@
 
         .song-title {
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             margin-bottom: 2px;
         }
 
         .song-status {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
         }
 
-        /* Theme & Vibe Selector UI */
+        /* Theme Switcher UI */
         .theme-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 10px;
         }
 
@@ -317,14 +411,15 @@
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 12px;
-            border-radius: 14px;
+            padding: 10px;
+            border-radius: 12px;
             font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             box-shadow: none;
+            font-size: 0.85rem;
         }
 
         .theme-btn:hover {
@@ -333,7 +428,6 @@
             transform: translateY(-2px);
         }
 
-        /* Footer Quote */
         footer {
             text-align: center;
             color: var(--text-muted);
@@ -358,36 +452,89 @@
     <div class="ambient-glow" id="glow"></div>
 
     <header>
+        <div class="live-clock" id="live-clock">00:00:00 AM</div>
         <h1>Aura Sanctuary</h1>
-        <p>Immersive soundscapes & distraction-free flow state.</p>
+        <p>Your Ultimate Unified Focus & Productivity Hub</p>
     </header>
 
     <div class="dashboard">
         <!-- Pomodoro Card -->
         <div class="card timer-card">
-            <div class="card-title">⏱️ Focus Timer</div>
+            <div class="card-title"><span>⏱️ Focus Timer</span></div>
             <div class="timer-display" id="timer">25:00</div>
             <div class="timer-controls">
                 <button id="main-timer-btn" onclick="toggleTimer()">Start Flow</button>
                 <button class="outline" onclick="resetTimer()">Reset</button>
             </div>
+            <div class="session-counter" id="session-counter">Completed sessions today: 0</div>
         </div>
 
         <!-- Todo Card -->
         <div class="card todo-card">
-            <div class="card-title">📝 Focus Tasks</div>
+            <div class="card-title"><span>📝 Focus Tasks</span></div>
             <div class="todo-input-group">
-                <input type="text" id="task-input" placeholder="What's your priority?">
+                <input type="text" id="task-input" placeholder="Add priority task...">
                 <button onclick="addTask()">Add</button>
             </div>
-            <ul class="todo-list" id="todo-list">
-                <!-- Tasks injected via JS -->
-            </ul>
+            <ul class="todo-list" id="todo-list"></ul>
+        </div>
+
+        <!-- Ambient Sound Mixer Card -->
+        <div class="card ambient-card">
+            <div class="card-title"><span>🌧️ Ambient Sound Mixer</span></div>
+            <div class="sound-grid">
+                <div class="sound-row">
+                    <span class="sound-info">Cozy Rain</span>
+                    <div class="sound-controls">
+                        <button class="outline" id="rain-btn" onclick="toggleSound('rain')">Play</button>
+                        <input type="range" min="0" max="1" step="0.05" value="0.5" oninput="setVolume('rain', this.value)">
+                    </div>
+                </div>
+                <div class="sound-row">
+                    <span class="sound-info">Coffee Shop Vibe</span>
+                    <div class="sound-controls">
+                        <button class="outline" id="cafe-btn" onclick="toggleSound('cafe')">Play</button>
+                        <input type="range" min="0" max="1" step="0.05" value="0.5" oninput="setVolume('cafe', this.value)">
+                    </div>
+                </div>
+            </div>
+            <!-- Audio Elements using robust reliable white noise/ambient streams -->
+            <audio id="rain-audio" src="https://actions.google.com/sounds/v1/weather/light_rain.ogg" loop preload="none"></audio>
+            <audio id="cafe-audio" src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" loop preload="none"></audio>
+        </div>
+
+        <!-- Scratchpad Card -->
+        <div class="card notes-card">
+            <div class="card-title"><span>📌 Quick Scratchpad</span></div>
+            <textarea id="scratchpad" placeholder="Type notes, ideas, or brain dumps here... (Auto-saves)" oninput="saveNotes()"></textarea>
+        </div>
+
+        <!-- Habits Tracker Card -->
+        <div class="card habits-card">
+            <div class="card-title"><span>🌱 Daily Habit Streaks</span></div>
+            <div class="habits-container">
+                <div class="habit-card-item" id="habit-1" onclick="toggleHabit(1)">
+                    <span class="habit-name">💧 Hydrated (2L water)</span>
+                    <div class="checkbox-container">✓</div>
+                </div>
+                <div class="habit-card-item" id="habit-2" onclick="toggleHabit(2)">
+                    <span class="habit-name">🧘 10 Min Meditation</span>
+                    <div class="checkbox-container">✓</div>
+                </div>
+                <div class="habit-card-item" id="habit-3" onclick="toggleHabit(3)">
+                    <span class="habit-name">📚 Read 15 Pages</span>
+                    <div class="checkbox-container">✓</div>
+                </div>
+                <div class="habit-card-item" id="habit-4" onclick="toggleHabit(4)">
+                    <span class="habit-name">💻 Code / Build Daily</span>
+                    <div class="checkbox-container">✓</div>
+                </div>
+            </div>
         </div>
 
         <!-- Radio Card -->
         <div class="card radio-card">
-            <div class="card-title">🎵 Live Lo-Fi Stream</div>
+            <div class="card-title"><span>🎵 Live Lo-Fi Stream</span></div>
             <div class="radio-content">
                 <div class="station-info">
                     <div class="vinyl-disc" id="vinyl">
@@ -405,25 +552,34 @@
 
         <!-- Theme Switcher Card -->
         <div class="card theme-card">
-            <div class="card-title">🎨 Atmosphere Switcher</div>
+            <div class="card-title"><span>🎨 Atmosphere Switcher</span></div>
             <div class="theme-grid">
-                <button class="theme-btn" onclick="setVibe('purple', '#0b0f19', '#1e1b4b', '#a78bfa', 'radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0b0f19 70%)')">💜 Midnight</button>
-                <button class="theme-btn" onclick="setVibe('blue', '#020617', '#0f172a', '#38bdf8', 'radial-gradient(circle at 50% 20%, #0f172a 0%, #020617 70%)')">🌧️ Rainy Blue</button>
-                <button class="theme-btn" onclick="setVibe('amber', '#18120b', '#29211a', '#fb923c', 'radial-gradient(circle at 50% 20%, #29211a 0%, #18120b 70%)')">☕ Warm Café</button>
-                <button class="theme-btn" onclick="setVibe('emerald', '#022c22', '#064e3b', '#34d399', 'radial-gradient(circle at 50% 20%, #064e3b 0%, #022c22 70%)')">🌿 Forest Pine</button>
+                <button class="theme-btn" onclick="setVibe('#0b0f19', '#1e1b4b', '#a78bfa', 'radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0b0f19 70%)')">💜 Midnight</button>
+                <button class="theme-btn" onclick="setVibe('#020617', '#0f172a', '#38bdf8', 'radial-gradient(circle at 50% 20%, #0f172a 0%, #020617 70%)')">🌧️ Rainy Blue</button>
+                <button class="theme-btn" onclick="setVibe('#18120b', '#29211a', '#fb923c', 'radial-gradient(circle at 50% 20%, #29211a 0%, #18120b 70%)')">☕ Warm Café</button>
+                <button class="theme-btn" onclick="setVibe('#022c22', '#064e3b', '#34d399', 'radial-gradient(circle at 50% 20%, #064e3b 0%, #022c22 70%)')">🌿 Forest Pine</button>
             </div>
         </div>
     </div>
 
-    <footer id="quote-footer">
-        "Focus is a muscle. The more you practice eliminating distractions, the easier it becomes."
-    </footer>
+    <footer id="quote-footer">"Small daily improvements over time lead to stunning results."</footer>
 
     <script>
+        // --- Live Clock ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-clock').textContent = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
         // --- Timer Logic ---
         let timeLeft = 25 * 60;
         let timerRunning = false;
         let timerInterval = null;
+        let sessionsCompleted = localStorage.getItem('aura_sessions') || 0;
+        document.getElementById('session-counter').textContent = `Completed sessions today: ${sessionsCompleted}`;
+
         const timerDisplay = document.getElementById('timer');
         const mainTimerBtn = document.getElementById('main-timer-btn');
 
@@ -447,6 +603,9 @@
                         timerRunning = false;
                         mainTimerBtn.textContent = "Start Flow";
                         mainTimerBtn.classList.remove('outline');
+                        sessionsCompleted++;
+                        localStorage.setItem('aura_sessions', sessionsCompleted);
+                        document.getElementById('session-counter').textContent = `Completed sessions today: ${sessionsCompleted}`;
                         alert("Great focus session! Take a deep breath break.");
                     }
                 }, 1000);
@@ -489,13 +648,52 @@
         }
 
         function toggleTask(btn) {
-            const item = btn.closest('.todo-item');
-            item.classList.toggle('done');
+            btn.closest('.todo-item').classList.toggle('done');
         }
 
         taskInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') addTask();
         });
+
+        // --- Ambient Sound Mixer Logic ---
+        function toggleSound(type) {
+            const audio = document.getElementById(`${type}-audio`);
+            const btn = document.getElementById(`${type}-btn`);
+            if (audio.paused) {
+                audio.play();
+                btn.textContent = "Pause";
+            } else {
+                audio.pause();
+                btn.textContent = "Play";
+            }
+        }
+
+        function setVolume(type, val) {
+            const audio = document.getElementById(`${type}-audio`);
+            audio.volume = val;
+        }
+
+        // --- Scratchpad Local Storage ---
+        const scratchpad = document.getElementById('scratchpad');
+        scratchpad.value = localStorage.getItem('aura_notes') || '';
+        function saveNotes() {
+            localStorage.setItem('aura_notes', scratchpad.value);
+        }
+
+        // --- Habit Tracker Logic ---
+        function toggleHabit(id) {
+            const item = document.getElementById(`habit-${id}`);
+            item.classList.toggle('completed');
+            const isCompleted = item.classList.contains('completed');
+            localStorage.setItem(`aura_habit_${id}`, isCompleted);
+        }
+
+        // Load saved habits state
+        for (let i = 1; i <= 4; i++) {
+            if (localStorage.getItem(`aura_habit_${i}`) === 'true') {
+                document.getElementById(`habit-${i}`).classList.add('completed');
+            }
+        }
 
         // --- Radio / Lo-Fi Audio Logic ---
         const audio = document.getElementById('lofi-audio');
@@ -512,7 +710,7 @@
                     vinyl.classList.add('playing');
                     radioStatus.textContent = "Now Streaming Live 🎧";
                 }).catch(err => {
-                    alert("Click play again to start the stream.");
+                    alert("Click play again to start stream.");
                 });
             } else {
                 audio.pause();
@@ -523,8 +721,8 @@
             }
         }
 
-        // --- Theme & Atmosphere Switcher ---
-        function setVibe(name, bgColor, cardColor, accentColor, gradient) {
+        // --- Theme Switcher ---
+        function setVibe(bgColor, cardColor, accentColor, gradient) {
             document.documentElement.style.setProperty('--bg-color', bgColor);
             document.documentElement.style.setProperty('--card-bg', cardColor);
             document.documentElement.style.setProperty('--accent', accentColor);
@@ -533,11 +731,10 @@
             document.getElementById('glow').style.background = accentColor;
         }
 
-        // Random dynamic motivational quotes on load
+        // Quotes
         const quotes = [
-            "\"Focus is a muscle. The more you practice eliminating distractions, the easier it becomes.\"",
-            "\"Almost everything will work again if you unplug it for a few minutes... including you.\"",
-            "\"Quiet the mind, and the soul will speak.\"",
+            "\"Small daily improvements over time lead to stunning results.\"",
+            "\"Concentrate all your thoughts upon the work in hand. The sun's rays do not burn until brought to a focus.\"",
             "\"Action is the foundational key to all success.\""
         ];
         document.getElementById('quote-footer').textContent = quotes[Math.floor(Math.random() * quotes.length)];
